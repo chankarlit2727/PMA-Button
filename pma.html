@@ -5,7 +5,6 @@
 <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
 
 <title>PMA Assignment</title>
-<script src="clickEvent.js"></script>
 <script src="jquery-3.6.0.min.js"></script>
 <script src="knockout-3.5.1.js"></script>
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.1.1/css/all.min.css">
@@ -46,6 +45,7 @@
 		border: none;
 		text-decoration: none;
 		box-shadow: inset 0px 0px 14px 5px #484848;
+
 	}
 
 	.vertical{
@@ -70,17 +70,21 @@
 		color: #A7A8B2;
 	}
 
+	.changeColor{
+		background: #00CA73 !important;
+	}
+	.changeColor1{
+		background: #C73030 !important;
+	}
+	.changeColor2{
+		background: #C73030 !important;
+	}
+	.changeColor3{
+		background: #C73030 !important;
+	}
 </style>
 
-<script>
-<!--	$(document).ready(function(){-->
-<!--		$("#firstPMA").click(function(){-->
-<!--			this.status1 == true;-->
-<!--			console.log(this.status1());-->
-<!--		})-->
-<!--	})-->
 
-</script>
 </head>
 <body>
 
@@ -93,19 +97,19 @@
 			<span class="vertical"></span>
 			<span class="vertical"></span>
 		</div>
-		<div id="firstPMA" class="first-pma" data-bind="style: styling, click: changeStyles ">
+		<div id="firstPMA" class="first-pma" data-bind="style:{'background': Status1}, click: SwitchOnOff1, css: {'changeColor': isActive1}">
 			<i class="fas fa-power-off"></i><br>
 			<span class="channel" data-bind="text: ChannelTitle1"></span>
 		</div>
-		<div id="secondPMA" class="second-pma" data-bind="style: styling1, click: changeStyles1">
+		<div id="secondPMA" class="second-pma" data-bind="style: {background: Status2}, click: SwitchOnOff2, css: {'changeColor1': isActive2}">
 			<i class="fas fa-power-off"></i><br>
 			<span class="channel" data-bind="text: ChannelTitle2"></span>
 		</div>
-		<div id="thirdPMA" class="third-pma" data-bind="style: {background: Status3}">
+		<div id="thirdPMA" class="third-pma" data-bind="style: {background: Status3}, click: SwitchOnOff3, css: {'changeColor2': isActive3}">
 			<i class="fas fa-power-off"></i><br>
 			<span class="channel" data-bind="text: ChannelTitle3"></span>
 		</div>
-		<div id="fourthPMA" class="fourth-pma" data-bind="style: {background: Status4}">
+		<div id="fourthPMA" class="fourth-pma" data-bind="style: {background: Status4}, click: SwitchOnOff4, css: {'changeColor3': isActive4}">
 			<i class="fas fa-power-off"></i><br>
 			<span class="channel" data-bind="text: ChannelTitle4"></span>
 		</div>
@@ -123,7 +127,7 @@
         "name": "PMA 1",
         "channels": [{
             "id": 1,
-            "status": true
+            "status": false
         }, {
             "id": 2,
             "status": true
@@ -147,40 +151,76 @@
 		this.status3 = params.data.channels()[2].status;
 		this.status4 = params.data.channels()[3].status;
 
-		console.log(this.status1());
-		this.SwitchOn = function(){
-			params.data.channels()[0].status = true;
-			this.status1 = params.data.channels()[0].status;
-			console.log(this.status1);
+
+		this.isActive1 = ko.observable(false);
+		this.isActive2 = ko.observable(false);
+		this.isActive3 = ko.observable(false);
+		this.isActive4 = ko.observable(false);
+
+		this.SwitchOnOff1 = function(){
+			var display1 = this.isActive1() ? false : true;
+			this.isActive1(display1);
+			if(display1 == true){
+				this.status1 = true;
+			}else{
+				this.status1 = false;
+			};
+			if(this.status1 == true)
+				console.log(this.status1 + ', Channel 1 Switch On');
+			else if(this.status1 == false)
+				console.log(this.status1 + ', Channel 1 Switch Off');
 		}
 
-		this.styling = ko.observable({
-    		'background': '#00CA73'
-    	});
-    	this.styling1 = ko.observable({
-    		'background': '#00CA73'
-    	});
+		this.SwitchOnOff2 = function(){
+			var display2 = this.isActive2() ? false:true;
+			this.isActive2(display2);
+			if(display2 == true){
+				this.status2 = false;
+			}else{
+				this.status2 = true;
+			}
 
-    	 this.changeStyles = function(){
-    	 	params.data.channels()[0].status = false;
-			this.status1 = params.data.channels()[0].status;
-			console.log(this.status1);
-			this.styling({
-				'background': '#C73030'
-			});
-		};
+			if(this.status2 == true)
+				console.log(this.status2 + ', Channel 2 Switch On');
+			else if(this.status2 == false)
+				console.log(this.status2 + ', Channel 2 Switch Off');
+		}
 
-		this.changeStyles1 = function(){
-			console.log(this.status1());
-			this.styling1({
-				'background': '#C73030'
-			});
-		};
+		this.SwitchOnOff3 = function(){
+			var display = this.isActive3() ? false:true;
+			this.isActive3(display);
+			if(display == true){
+				this.status3 = false;
+			}else{
+				this.status3 = true;
+			}
+
+			if(this.status3 == true)
+				console.log(this.status3 + ', Channel 3 Switch On');
+			else if(this.status3 == false)
+				console.log(this.status3 + ', Channel 3 Switch Off');
+		}
+
+		this.SwitchOnOff4 = function(){
+			var display = this.isActive4() ? false : true;
+			this.isActive4(display);
+			if(display == true){
+				this.status4 = false;
+			}else{
+				this.status4 = true;
+			}
+
+			if(this.status4 == true)
+				console.log(this.status4 + ', Channel 4 Switch On');
+			else if(this.status4 == false)
+				console.log(this.status4 + ', Channel 4 Switch Off');
+		}
+
 
 		this.Status1 = ko.computed(function(){
-            if(this.status1() == true){
+            if(this.status1 == true)
             	return '#00CA73';
-            }else
+            else
             	return '#C73030';
         }, this)
 
