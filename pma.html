@@ -17,11 +17,12 @@
 	.pma-container{
 		position: relative;
 		top: 90px;
-		width: 620px;
+		max-width: 620px;
 		margin-left: 100px;
-		padding-top: 50px;
-		height: 250px;
+		padding-top: 45px;
+		height: 220px;
 		left: 300px;
+		overflow: hidden;
 		background: #1C1E25;
 
 	}
@@ -32,13 +33,13 @@
 		color: #A5A7B0;
 		font-size: 17px;
 	}
-	.first-pma, .second-pma, .third-pma, .fourth-pma{
+	.first-pma{
 		position: relative;
-		margin: 25px;
+		margin: 30px 20px;
+		margin-bottom: 100px;
 		display: inline-flex;
 		width: 60px;
 		height: 60px;
-		left: 80px;
 		border-radius: 50%;
 		align-items: center;
 		justify-content: center;
@@ -51,10 +52,10 @@
 	.vertical{
 		position: relative;
 		border-left: 4px solid #00CF75;
-		margin: 0 40px;
-		padding: 15px;
-		left: 95px;
-
+		margin: 10px;
+		padding: 10px;
+		left: 41px;
+		bottom: 40px;
 	}
 
 	.fa-power-off{
@@ -70,18 +71,15 @@
 		color: #A7A8B2;
 	}
 
-	.changeColor{
-		background: #00CA73 !important;
+	.selected{
+		background: #00CA73;
 	}
-	.changeColor1{
-		background: #C73030 !important;
+
+	.background{
+		background: #00CA73;
 	}
-	.changeColor2{
-		background: #C73030 !important;
-	}
-	.changeColor3{
-		background: #C73030 !important;
-	}
+
+
 </style>
 
 
@@ -90,28 +88,13 @@
 
 <template id="pma-component">
 	<div class="pma-container">
-		<span class="pmatitle" data-bind="text: name"></span><br>
-		<div>
+		<span class="pmatitle" data-bind="text: item.name"></span>
+		<div data-bind="foreach: {data:item.channels}">
 			<span class="vertical"></span>
-			<span class="vertical"></span>
-			<span class="vertical"></span>
-			<span class="vertical"></span>
-		</div>
-		<div id="firstPMA" class="first-pma" data-bind="style:{'background': Status1}, click: SwitchOnOff1, css: {'changeColor': isActive1}">
-			<i class="fas fa-power-off"></i><br>
-			<span class="channel" data-bind="text: ChannelTitle1"></span>
-		</div>
-		<div id="secondPMA" class="second-pma" data-bind="style: {background: Status2}, click: SwitchOnOff2, css: {'changeColor1': isActive2}">
-			<i class="fas fa-power-off"></i><br>
-			<span class="channel" data-bind="text: ChannelTitle2"></span>
-		</div>
-		<div id="thirdPMA" class="third-pma" data-bind="style: {background: Status3}, click: SwitchOnOff3, css: {'changeColor2': isActive3}">
-			<i class="fas fa-power-off"></i><br>
-			<span class="channel" data-bind="text: ChannelTitle3"></span>
-		</div>
-		<div id="fourthPMA" class="fourth-pma" data-bind="style: {background: Status4}, click: SwitchOnOff4, css: {'changeColor3': isActive4}">
-			<i class="fas fa-power-off"></i><br>
-			<span class="channel" data-bind="text: ChannelTitle4"></span>
+			<div id="firstPMA" class="first-pma" data-bind="style:{background: $data.status() ? '#00CA73' : '#C73030'}, click: $parent._switch ">
+				<i class="fas fa-power-off"></i>
+				<span class="channel" data-bind="text: 'Channel '+id() "></span>
+			</div>
 		</div>
 	</div>
 </template>
@@ -120,7 +103,7 @@
 
 
 <script>
-
+	var data = ko.observableArray([]);
 	var observable = ko.observable,
     data = ko.mapping.fromJS(
     {
@@ -134,132 +117,34 @@
         }, {
             "id": 3,
             "status": true
-        }, {
+        },{
             "id": 4,
+            "status": true
+        },{
+            "id": 5,
+            "status": true
+        },{
+            "id": 6,
             "status": true
         }]
     });
     ko.components.register('pma-detail', {
       viewModel: function(params) {
-      	this.name = params.data.name;
-		this.channel1 = params.data.channels()[0].id;
-		this.channel2 = params.data.channels()[1].id;
-		this.channel3 = params.data.channels()[2].id;
-		this.channel4 = params.data.channels()[3].id;
-		this.status1 = params.data.channels()[0].status;
-		this.status2 = params.data.channels()[1].status;
-		this.status3 = params.data.channels()[2].status;
-		this.status4 = params.data.channels()[3].status;
 
-
-		this.isActive1 = ko.observable(false);
-		this.isActive2 = ko.observable(false);
-		this.isActive3 = ko.observable(false);
-		this.isActive4 = ko.observable(false);
-
-		this.SwitchOnOff1 = function(){
-			var display1 = this.isActive1() ? false : true;
-			this.isActive1(display1);
-			if(display1 == true){
-				this.status1 = true;
+		this.item = params.data;
+		this._switch = function(data) {
+			var status = ko.observable();
+			if(data.status() == false){
+				console.log("Channel" + " " + data.id() + " " + "Switch On");
+				status = data.status(true);
 			}else{
-				this.status1 = false;
-			};
-			if(this.status1 == true)
-				console.log(this.status1 + ', Channel 1 Switch On');
-			else if(this.status1 == false)
-				console.log(this.status1 + ', Channel 1 Switch Off');
-		}
-
-		this.SwitchOnOff2 = function(){
-			var display2 = this.isActive2() ? false:true;
-			this.isActive2(display2);
-			if(display2 == true){
-				this.status2 = false;
-			}else{
-				this.status2 = true;
+				console.log("Channel" + " " + data.id() + " " + "Switch Off");
+				status = data.status(false);
 			}
-
-			if(this.status2 == true)
-				console.log(this.status2 + ', Channel 2 Switch On');
-			else if(this.status2 == false)
-				console.log(this.status2 + ', Channel 2 Switch Off');
-		}
-
-		this.SwitchOnOff3 = function(){
-			var display = this.isActive3() ? false:true;
-			this.isActive3(display);
-			if(display == true){
-				this.status3 = false;
-			}else{
-				this.status3 = true;
-			}
-
-			if(this.status3 == true)
-				console.log(this.status3 + ', Channel 3 Switch On');
-			else if(this.status3 == false)
-				console.log(this.status3 + ', Channel 3 Switch Off');
-		}
-
-		this.SwitchOnOff4 = function(){
-			var display = this.isActive4() ? false : true;
-			this.isActive4(display);
-			if(display == true){
-				this.status4 = false;
-			}else{
-				this.status4 = true;
-			}
-
-			if(this.status4 == true)
-				console.log(this.status4 + ', Channel 4 Switch On');
-			else if(this.status4 == false)
-				console.log(this.status4 + ', Channel 4 Switch Off');
-		}
+			console.log(data.status());
+	  }
 
 
-		this.Status1 = ko.computed(function(){
-            if(this.status1 == true)
-            	return '#00CA73';
-            else
-            	return '#C73030';
-        }, this)
-
-        this.Status2 = ko.computed(function(){
-            if(this.status2() == true)
-            	return '#00CA73';
-            else
-            	return '#C73030';
-        }, this)
-
-        this.Status3 = ko.computed(function(){
-            if(this.status3() == true)
-            	return '#00CA73';
-            else
-            	return '#C73030';
-        }, this)
-
-        this.Status4 = ko.computed(function(){
-            if(this.status4() == true)
-            	return '#00CA73';
-            else
-            	return '#C73030';
-        }, this)
-
-		this.ChannelTitle1 = ko.computed(function(){
-            return 'Channel' + ' ' + ko.utils.unwrapObservable(this.channel1());
-        }, this)
-
-        this.ChannelTitle2 = ko.computed(function(){
-            return 'Channel' + ' ' + ko.utils.unwrapObservable(this.channel2());
-        }, this)
-
-        this.ChannelTitle3 = ko.computed(function(){
-            return 'Channel' + ' ' + ko.utils.unwrapObservable(this.channel3());
-        }, this)
-
-        this.ChannelTitle4 = ko.computed(function(){
-            return 'Channel' + ' ' + ko.utils.unwrapObservable(this.channel4());
-        }, this)
       },
       template: {
         element: 'pma-component'
